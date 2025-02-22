@@ -44,11 +44,17 @@ const VoiceChat = () => {
       await conversation.startSession({
         agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID!,
         clientTools: {
-          displayEvent: async ({ eventValue }: { eventValue: string }) => {
-            const timestamp = new Date().toISOString();
+          displayEvent: async ({eventValue, eventType}: {eventValue: string, eventType: string}) => {
             addRow(eventValue); // Add event data to table
-          },
-        },
+            await fetch('http://localhost:5000/sendNotes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ eventValue, eventType })
+            });
+          }
+        }
       });
     } catch (error) {
       setErrorMessage("Failed to start conversation");
