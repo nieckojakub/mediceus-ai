@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Stethoscope } from "lucide-react"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -30,10 +29,10 @@ export default function LoginPage() {
       <Card className="max-w-lg w-full border-blue-100 shadow-lg">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-blue-50 w-fit">
-            <Stethoscope className="w-8 h-8 text-blue-600" />
+            <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold text-blue-900">Welcome Back</CardTitle>
-          <CardDescription className="text-blue-600">Login to access Medicus</CardDescription>
+          <CardDescription className="text-blue-600">Login to access Mediceus AI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

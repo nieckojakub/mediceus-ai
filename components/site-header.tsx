@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Stethoscope, History, DoorClosed, LogOut } from "lucide-react"
+import { History, DoorClosed, LogOut } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export function SiteHeader() {
@@ -34,10 +34,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <Stethoscope className="h-6 w-6 text-blue-600" />
-            <span className="text-xl font-bold text-blue-900">Medicus</span>
-          </Link>
+        <Link href="/" className="flex items-center space-x-2">
+          <img src="/logo.png" alt="Logo" className="h-6 w-auto" />
+          <span className="text-xl font-bold text-blue-900">Mediceus AI</span>
+        </Link>
 
           {user && (
             <nav className="flex items-center space-x-8 text-sm font-medium">

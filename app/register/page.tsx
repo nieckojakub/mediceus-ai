@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Eye, EyeOff, Loader2, Stethoscope } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 
 import { register } from "@/api/auth"
 import { Button } from "@/components/ui/button"
@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
       toast({
         title: "Success",
-        description: "Registration successful! Welcome to Medicus.",
+        description: "Registration successful! Welcome to Mediceus AI.",
       })
 
       router.push("/dashboard")
@@ -99,10 +99,10 @@ export default function RegisterPage() {
       <Card className="max-w-lg w-full">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto mb-4 p-3 rounded-full bg-accent w-fit">
-            <Stethoscope className="w-8 h-8 text-primary" aria-hidden="true" />
+            <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Sign up to join Medicus</CardDescription>
+          <CardDescription>Sign up to join Mediceus AI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
