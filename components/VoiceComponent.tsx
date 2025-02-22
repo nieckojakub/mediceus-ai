@@ -7,8 +7,7 @@ import { useConversation } from "@11labs/react";
 
 // UI
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff } from "lucide-react";
 
 const VoiceChat = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -55,11 +54,15 @@ const VoiceChat = () => {
       const conversationId = await conversation.startSession({
         agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID!,
         clientTools: {
-            displayEvent: async ({eventValue, eventType}: {eventValue: string, eventType: string}) => {
-                console.log("Event Timestamp: " + new Date());
-                console.log("EventType: " + eventType);
-                console.log("EventValue: " + eventValue);
-            }
+          displayEvent: async ({eventValue, eventType}: {eventValue: string, eventType: string}) => {
+            await fetch('http://localhost:5000/sendNotes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ eventValue, eventType })
+            });
+          }
         }
       });
       console.log("Started conversation:", conversationId);
@@ -78,77 +81,44 @@ const VoiceChat = () => {
     }
   };
 
-  const toggleMute = async () => {
-    try {
-      await conversation.setVolume({ volume: isMuted ? 1 : 0 });
-      setIsMuted(!isMuted);
-    } catch (error) {
-      setErrorMessage("Failed to change volume");
-      console.error("Error changing volume:", error);
-    }
-  };
-
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Voice Chat
-          <div className="flex gap-2">
+      <div className="space-y-4 flex flex-col items-center">
+        <div className="flex justify-center w-full">
+          {status === "connected" ? (
             <Button
-              variant="outline"
-              size="icon"
-              onClick={toggleMute}
-              disabled={status !== "connected"}
+              variant="destructive"
+              onClick={handleEndConversation}
+              className="w-auto"
             >
-              {isMuted ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
+              <MicOff className="mr-2 h-4 w-4" />
+              End Conversation
             </Button>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex justify-center">
-            {status === "connected" ? (
-              <Button
-                variant="destructive"
-                onClick={handleEndConversation}
-                className="w-full"
-              >
-                <MicOff className="mr-2 h-4 w-4" />
-                End Conversation
-              </Button>
-            ) : (
-              <Button
-                onClick={handleStartConversation}
-                disabled={!hasPermission}
-                className="w-full"
-              >
-                <Mic className="mr-2 h-4 w-4" />
-                Start Conversation
-              </Button>
-            )}
-          </div>
-
-          <div className="text-center text-sm">
-            {status === "connected" && (
-              <p className="text-green-600">
-                {isSpeaking ? "Agent is speaking..." : "Listening..."}
-              </p>
-            )}
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            {!hasPermission && (
-              <p className="text-yellow-600">
-                Please allow microphone access to use voice chat
-              </p>
-            )}
-          </div>
+          ) : (
+            <Button
+              onClick={handleStartConversation}
+              disabled={!hasPermission}
+              className="w-auto"
+            >
+              <Mic className="mr-2 h-4 w-4" />
+              Start Conversation
+            </Button>
+          )}
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="text-center text-sm">
+          {status === "connected" && (
+            <p className="text-green-600">
+              {isSpeaking ? "Agent is speaking..." : "Listening..."}
+            </p>
+          )}
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          {!hasPermission && (
+            <p className="text-yellow-600">
+              Please allow microphone access to use voice chat
+            </p>
+          )}
+        </div>
+      </div>
   );
 };
 

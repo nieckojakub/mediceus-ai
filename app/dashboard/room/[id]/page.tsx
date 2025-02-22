@@ -37,32 +37,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     setActiveTab("transcription")
   }
 
-  // Funkcja do obsługi dodania i usunięcia widgetu
-  // const handleWidgetToggle = () => {
-  //   if (!isRecording) {
-  //     addWidget()
-  //   } else {
-  //     removeWidget()
-  //   }
-  //   setIsRecording(!isRecording)
-  // }
-
-  // const addWidget = () => {
-  //   const script = document.createElement("script")
-  //   script.src = "https://elevenlabs.io/convai-widget/index.js"
-  //   script.async = true
-  //   document.body.appendChild(script)
-
-  //   const widget = document.createElement("elevenlabs-convai")
-  //   widget.setAttribute("agent-id", "gNSBUTqoJOn9fOusHjI2")
-  //   document.body.appendChild(widget)
-  // }
-
-  // const removeWidget = () => {
-  //   const widget = document.querySelector("elevenlabs-convai")
-  //   if (widget) widget.remove()
-  // }
-
   const downloadReport = () => {
     console.log("Downloading report...")
   }
@@ -211,6 +185,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 </div>
                 <div className="flex gap-2">
                   <VoiceComponent />
+                </div>
+                <div className="flex gap-2">
                   <Button
                     onClick={downloadReport}
                     variant="outline"
