@@ -2,12 +2,15 @@ import datetime
 import time
 from collections import namedtuple
 from pathlib import Path
+from services.eleven_labs import *
+from utils.report_generator import *
 import database
 import jwt
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlite3 import IntegrityError
+
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
@@ -151,6 +154,12 @@ def report():
     chat_note = request.json
     print(chat_note)
 
+    elevenLabsService = ElevenLabsService('sk_e59804fe295f2e5a8ae260951efa2e58133b807804c9072a')
+    response = elevenLabsService.get_conversation(chat_note['conversationId'])
+    
+    response = json.loads(response)
+
+    report = create_report(response, chat_note['surgeryDetails'])
     
     # Return a confirmation response
     return jsonify({"status": "success", "received": chat_note}), 200
