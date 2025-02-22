@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -25,7 +26,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-4">
       <Card className="max-w-lg w-full border-blue-100 shadow-lg">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-blue-50 w-fit">
@@ -51,6 +52,14 @@ export default function LoginPage() {
             <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Don&apos;t have an account?{" "}
+                <Link href="/register" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+                  Sign up
+                </Link>
+              </p>
+            </div>
           </form>
         </CardContent>
       </Card>
