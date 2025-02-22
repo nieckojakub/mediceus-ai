@@ -1,8 +1,26 @@
 import sqlite3
 
 
-def create_database():
+def get_db_connection():
     conn = sqlite3.connect("hospital.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def get_last_operation_id():
+    # Connect to the sqlite database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Execute the query to get the maximum operation_id from the Events table
+    cursor.execute("SELECT MAX(operation_id) FROM Events")
+    result = cursor.fetchone()
+    conn.close()
+
+    return result
+
+
+def create_database():
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -53,20 +71,20 @@ def create_database():
     conn.close()
 
 
-def insert_into(table_name, row):
-    conn = sqlite3.connect("hospital.db")
+def insert_into(table_name, columns, row):
+    conn = get_db_connection()
     cursor = conn.cursor()
-    # Queries to INSERT records. 
-    query = f"INSERT INTO EMPLOYEE(FIRST_NAME, LAST_NAME, AGE, SEX, INCOME) VALUES ('Anand', 'Choubey', 25, 'M', 10000)"
+     
+    query = f"INSERT INTO {table_name}{columns} VALUES { row }"
 
-    cursor.execute() 
+    cursor.execute(query) 
 
     conn.commit()
     conn.close()
 
 
 def insert_sample_data():
-    conn = sqlite3.connect("hospital.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Dodanie użytkowników

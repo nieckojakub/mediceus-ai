@@ -34,10 +34,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Stethoscope className="h-6 w-6 text-blue-600" />
             <span className="text-xl font-bold text-blue-900">Medicus</span>
-          </div>
+          </Link>
 
           {user && (
             <nav className="flex items-center space-x-8 text-sm font-medium">
@@ -81,4 +81,3 @@ export function SiteHeader() {
     </header>
   )
 }
-

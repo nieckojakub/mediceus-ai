@@ -1,3 +1,4 @@
-flask_cors
 elevenlabs
 reportlab
+flask_cors
+pyjwt
