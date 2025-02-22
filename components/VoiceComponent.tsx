@@ -1,22 +1,26 @@
 "use client";
 
-import React, { useEffect, useState, useContext } from "react";
-import { useConversation } from "@11labs/react";
+import React, { useEffect, useState } from "react";
+import { useConversation as use11LabsConversation } from "@11labs/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
-import { TableContext } from "@/components/TableContext"; // Import TableContext
+import { useTable } from "@/components/TableContext";
+import { useConversation } from "@/components/ConversationContext";
 
 const VoiceChat = () => {
   const [hasPermission, setHasPermission] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const tableContext = useContext(TableContext);
-  const addRow = tableContext?.addRow || (() => {}); // Use TableContext to add rows or provide a default function
+  const { addRow } = useTable();
+  const { setConversationId } = useConversation();
 
-  const conversation = useConversation({
+  const conversation = use11LabsConversation({
     onConnect: () => console.log("Connected to ElevenLabs"),
-    onDisconnect: () => console.log("Disconnected from ElevenLabs"),
+    onDisconnect: () => {
+      console.log("Disconnected from ElevenLabs");
+      //setConversationId(null);
+    },
     onMessage: (message: string) => console.log("Received message:", message),
     onError: (error: string | Error) => {
       setErrorMessage(typeof error === "string" ? error : error.message);
@@ -41,11 +45,11 @@ const VoiceChat = () => {
 
   const handleStartConversation = async () => {
     try {
-      await conversation.startSession({
+      const conversationId = await conversation.startSession({
         agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID!,
         clientTools: {
           displayEvent: async ({eventValue, eventType}: {eventValue: string, eventType: string}) => {
-            addRow(eventValue); // Add event data to table
+            addRow(eventValue);
             await fetch('http://localhost:5000/sendNotes', {
                 method: 'POST',
                 headers: {
@@ -56,6 +60,7 @@ const VoiceChat = () => {
           }
         }
       });
+      setConversationId(conversationId);
     } catch (error) {
       setErrorMessage("Failed to start conversation");
       console.error("Error starting conversation:", error);
@@ -65,6 +70,7 @@ const VoiceChat = () => {
   const handleEndConversation = async () => {
     try {
       await conversation.endSession();
+      setConversationId(null);
     } catch (error) {
       setErrorMessage("Failed to end conversation");
       console.error("Error ending conversation:", error);

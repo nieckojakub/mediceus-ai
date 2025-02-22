@@ -16,6 +16,15 @@ def notes():
     # Return a confirmation response
     return jsonify({"status": "success", "received": chat_note}), 200
 
+@app.route('/downloadReport', methods=['POST'])
+def report():
+    chat_note = request.json
+    print(chat_note)
+
+    
+    # Return a confirmation response
+    return jsonify({"status": "success", "received": chat_note}), 200
+
 
 def main():
     sqlite_file = Path("hospital.db")
