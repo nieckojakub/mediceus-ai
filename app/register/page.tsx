@@ -24,8 +24,24 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState("")
+  const [passwordStrength, setPasswordStrength] = React.useState("")
   const router = useRouter()
   const { toast } = useToast()
+
+  // Evaluate password strength
+  const getPasswordStrength = (password: string): string => {
+    let score = 0
+    if (password.length >= 8) score += 1
+    if (/[A-Z]/.test(password)) score += 1
+    if (/[a-z]/.test(password)) score += 1
+    if (/[0-9]/.test(password)) score += 1
+    if (/[\W_]/.test(password)) score += 1
+
+    if (score <= 2) return "Weak"
+    if (score === 3) return "Medium"
+    if (score === 4) return "Strong"
+    return "Very Strong"
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -39,6 +55,19 @@ export default function RegisterPage() {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       role: formData.get("role") as string,
+    }
+
+    // Validate password strength; reject if it's weak
+    const strength = getPasswordStrength(registerData.password)
+    if (strength === "Weak") {
+      setError("Password is too weak. Please choose a stronger password.")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Password is too weak. Please choose a stronger password.",
+      })
+      setIsLoading(false)
+      return
     }
 
     try {
@@ -125,6 +154,7 @@ export default function RegisterPage() {
                   required
                   aria-invalid={error ? "true" : "false"}
                   disabled={isLoading}
+                  onChange={(e) => setPasswordStrength(getPasswordStrength(e.target.value))}
                 />
                 <Button
                   type="button"
@@ -142,6 +172,11 @@ export default function RegisterPage() {
                   <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
                 </Button>
               </div>
+              {passwordStrength && (
+                <p className={`text-sm ${passwordStrength === "Weak" ? "text-destructive" : "text-muted-foreground"}`}>
+                  Password strength: {passwordStrength}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
@@ -179,4 +214,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

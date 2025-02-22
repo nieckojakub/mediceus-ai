@@ -113,6 +113,24 @@ def login():
     })
 
 
+@app.route('/api/rooms', methods=['GET'])
+@cross_origin()
+def get_rooms():
+    conn = database.get_db_connection()
+    rooms = conn.execute("SELECT room_id, name, is_available FROM OperatingRoom").fetchall()
+    conn.close()
+
+    room_list = [
+        {
+            "id": room["room_id"],
+            "name": room["name"],
+            "status": "Available" if room["is_available"] else "In Use"
+        }
+        for room in rooms
+    ]
+    return jsonify(room_list)
+
+
 @app.route('/sendNotes', methods=['POST'])
 @cross_origin()
 def notes():
