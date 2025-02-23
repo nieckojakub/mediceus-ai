@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useConversation as use11LabsConversation } from "@11labs/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff } from "lucide-react";
 import { useTable } from "@/components/TableContext";
 import { useConversation } from "@/components/ConversationContext";
 
@@ -92,29 +91,17 @@ const VoiceChat = ({ operationId }: VoiceChatProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Voice Chat
-          <Button variant="outline" size="icon" onClick={toggleMute} disabled={status !== "connected"}>
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <Button onClick={status === "connected" ? handleEndConversation : handleStartConversation} disabled={!hasPermission} className="w-full">
-            {status === "connected" ? <MicOff className="mr-2 h-4 w-4" /> : <Mic className="mr-2 h-4 w-4" />}
-            {status === "connected" ? "End Conversation" : "Start Conversation"}
-          </Button>
-          <div className="text-center text-sm">
-            {status === "connected" && <p className="text-green-600">{isSpeaking ? "Agent is speaking..." : "Listening..."}</p>}
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            {!hasPermission && <p className="text-yellow-600">Please allow microphone access to use voice chat</p>}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Button onClick={status === "connected" ? handleEndConversation : handleStartConversation} disabled={!hasPermission} className="w-full">
+        {status === "connected" ? <MicOff className="mr-2 h-4 w-4" /> : <Mic className="mr-2 h-4 w-4" />}
+        {status === "connected" ? "End Conversation" : "Start Conversation"}
+      </Button>
+      <div className="text-center text-sm">
+        {status === "connected" && <p className="text-green-600">{isSpeaking ? "Agent is speaking..." : "Listening..."}</p>}
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        {!hasPermission && <p className="text-yellow-600">Please allow microphone access to use voice chat</p>}
+      </div>
+    </div>
   );
 };
 

@@ -158,14 +158,14 @@ def get_rooms():
 def operation():
     op_details = request.json
 
-    Operation = namedtuple('Operation', ['room_id', 'user_id', 'patient_first_name', 'patient_last_name', 'patient_pesel', 'operation_type'])
+    Operation = namedtuple('Operation', ['room_id', 'user_id', 'patient_first_name', 'patient_last_name', 'patient_id', 'operation_type'])
 
     new_operation = Operation(
         op_details['roomId'], 
         op_details['userId'], 
         op_details['patientFirstName'], 
         op_details['patientLastName'], 
-        op_details['patientPesel'],
+        op_details['patientId'],
         op_details['operationType']
     )
 
@@ -225,8 +225,7 @@ def main():
     
     if not sqlite_file.exists():
         database.create_database()
-    
-    # database.insert_sample_data()
+        database.insert_sample_data()
 
 
 if __name__ == '__main__':

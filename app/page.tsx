@@ -66,7 +66,7 @@ export default function HomePage() {
             <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Login to access Mediceus AI</CardDescription>
+          <CardDescription>Login to access MediceusAI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

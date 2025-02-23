@@ -79,11 +79,13 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const [operationDetails, setOperationDetails] = useState({
     patient_first_name: "",
     patient_last_name: "",
-    patient_pesel: "",
+    patient_id: "",
     operation_type: "",
   });
   const [userEmail, setUserId] = useState<string | null>(null);
   const [operationId, setOperationId] = useState<string | null>(null);
+
+  console.log(operationId)
 
   // Retrieve user id from sessionStorage on mount
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
           userId: user_id,
           patientFirstName: details.patient_first_name,
           patientLastName: details.patient_last_name,
-          patientPesel: details.patient_pesel,
+          patientId: details.patient_id,
           operationType: details.operation_type
         }),
       });
@@ -145,7 +147,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     const newOperationDetails = {
       patient_first_name: formData.get("patient_first_name") as string,
       patient_last_name: formData.get("patient_last_name") as string,
-      patient_pesel: formData.get("patient_pesel") as string,
+      patient_id: formData.get("patient_id") as string,
       operation_type: formData.get("operation_type") as string,
     };
     setOperationDetails(newOperationDetails);
@@ -224,15 +226,15 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="patient_pesel" className="text-gray-700">
-                            Patient PESEL
+                          <Label htmlFor="patient_id" className="text-gray-700">
+                            Patient ID
                           </Label>
                           <Input
-                            id="patient_pesel"
-                            name="patient_pesel"
+                            id="patient_id"
+                            name="patient_id"
                             className="border-blue-100"
                             required
-                            defaultValue={operationDetails.patient_pesel}
+                            defaultValue={operationDetails.patient_id}
                           />
                         </div>
                         <div className="space-y-2">
@@ -287,8 +289,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-500">PESEL:</span>{" "}
-                          <span className="text-gray-700">{operationDetails.patient_pesel}</span>
+                          <span className="text-gray-500">ID:</span>{" "}
+                          <span className="text-gray-700">{operationDetails.patient_id}</span>
                         </div>
                         <div className="col-span-2">
                           <span className="text-gray-500">Operation:</span>{" "}

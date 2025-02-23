@@ -12,20 +12,41 @@ export function SiteHeader() {
   const [user, setUser] = useState<{ email: string } | null>(null)
 
   useEffect(() => {
-    // Check if we're on a protected route (dashboard)
+    if (typeof window === "undefined") return // Zapobiega błędom SSR
+
+    const userEmail = sessionStorage.getItem("userEmail")
+
     if (pathname.includes("/dashboard")) {
-      // In a real app, this would be handled by your auth system
-      const userEmail = sessionStorage.getItem("userEmail")
       if (userEmail) {
         setUser({ email: userEmail })
       } else {
         router.push("/login")
       }
     }
+
+    // Usuwanie sesji przy zamknięciu okna / odświeżeniu strony
+    const clearSession = () => sessionStorage.clear()
+    window.addEventListener("beforeunload", clearSession)
+
+    // Można dodać obsługę przejścia w tło (np. po 5 minutach usuwać sesję)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setTimeout(() => {
+          sessionStorage.clear()
+          setUser(null)
+        }, 5 * 60 * 1000) // 5 minut
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener("beforeunload", clearSession)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
   }, [pathname, router])
 
   const handleLogout = () => {
-    sessionStorage.removeItem("userEmail")
+    sessionStorage.clear()
     setUser(null)
     router.push("/login")
   }
@@ -34,10 +55,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-        <Link href="/" className="flex items-center space-x-2">
-          <img src="/logo.png" alt="Logo" className="h-6 w-auto" />
-          <span className="text-xl font-bold text-blue-900">Mediceus AI</span>
-        </Link>
+          <Link href="/" className="flex items-center space-x-2">
+            <img src="/logo.png" alt="Logo" className="h-6 w-auto" />
+            <span className="text-xl font-bold text-blue-900">MediceusAI</span>
+          </Link>
 
           {user && (
             <nav className="flex items-center space-x-8 text-sm font-medium">

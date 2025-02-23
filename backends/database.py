@@ -37,7 +37,7 @@ def create_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS OperatingRoom (
             room_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
+            name TEXT UNIQUE NOT NULL,
             is_available BOOLEAN NOT NULL DEFAULT 1
         )
     ''')
@@ -49,7 +49,7 @@ def create_database():
             user_id INTEGER NOT NULL,
             patient_first_name TEXT NOT NULL,
             patient_last_name TEXT NOT NULL,
-            patient_pesel TEXT NOT NULL,
+            patient_id TEXT NOT NULL,
             operation_type TEXT NOT NULL,
             FOREIGN KEY (room_id) REFERENCES OperatingRoom(room_id),
             FOREIGN KEY (user_id) REFERENCES Users(id)
@@ -87,8 +87,26 @@ def insert_into(table_name, columns, row):
     return row_id  # Return the newly created row id
 
 
-
 def insert_sample_data():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.executemany('''
+        INSERT INTO OperatingRoom (name, is_available)
+        VALUES (?, ?)
+    ''', [
+        ("Operating Room 1", 1),
+        ("Operating Room 2", 1),
+        ("Operating Room 3", 0),  # Room occupied
+        ("Operating Room 4", 0),  # Room occupied
+        ("Cesarean Section Room 5", 1)  # Available
+    ])
+
+    conn.commit()
+    conn.close()
+
+
+def legacy_insert_sample_data():
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -114,7 +132,7 @@ def insert_sample_data():
 
     # Dodanie operacji
     cursor.executemany('''
-        INSERT INTO Operation (room_id, user_id, patient_first_name, patient_last_name, patient_pesel, operation_type)
+        INSERT INTO Operation (room_id, user_id, patient_first_name, patient_last_name, patient_id, operation_type)
         VALUES (?, ?, ?, ?, ?, ?)
     ''', [
         (1, 1, "Tomasz", "Lis", "90010112345", "Appendectomy"),
@@ -123,10 +141,10 @@ def insert_sample_data():
     ])
 
     # Pobranie ID operacji, aby dodać powiązane zdarzenia
-    cursor.execute("SELECT operation_id FROM Operation WHERE patient_pesel = '90010112345'")
+    cursor.execute("SELECT operation_id FROM Operation WHERE patient_id = '90010112345'")
     operation_1_id = cursor.fetchone()[0]
 
-    cursor.execute("SELECT operation_id FROM Operation WHERE patient_pesel = '85050567890'")
+    cursor.execute("SELECT operation_id FROM Operation WHERE patient_id = '85050567890'")
     operation_2_id = cursor.fetchone()[0]
 
     # Dodanie zdarzeń do operacji

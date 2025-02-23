@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
       toast({
         title: "Success",
-        description: "Registration successful! Welcome to Mediceus AI.",
+        description: "Registration successful! Welcome to MediceusAI.",
       })
 
       router.push("/dashboard")
@@ -102,7 +102,7 @@ export default function RegisterPage() {
             <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Sign up to join Mediceus AI</CardDescription>
+          <CardDescription>Sign up to join MediceusAI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

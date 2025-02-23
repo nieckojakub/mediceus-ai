@@ -5,10 +5,11 @@ import { Toaster } from "@/components/ui/toaster"
 import type { Metadata } from "next"
 import { SiteHeader } from "@/components/site-header"
 
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Mediceus AI - Healthcare Platform",
+  title: "MediceusAI - Healthcare Platform",
   description: "A modern healthcare platform for medical professionals",
 }
 

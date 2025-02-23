@@ -32,7 +32,7 @@ export default function LoginPage() {
             <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold text-blue-900">Welcome Back</CardTitle>
-          <CardDescription className="text-blue-600">Login to access Mediceus AI</CardDescription>
+          <CardDescription className="text-blue-600">Login to access MediceusAI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

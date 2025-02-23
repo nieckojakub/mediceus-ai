@@ -8,10 +8,10 @@ import os
 from io import BytesIO
 
 def create_report(elevenlabs_response, surgery_details):
-    firstName = surgery_details['firstName']
-    lastName = surgery_details['lastName']
-    procedure = surgery_details['procedure']
-    patientId = surgery_details['patientId']
+    firstName = surgery_details['patient_first_name']
+    lastName = surgery_details['patient_last_name']
+    procedure = surgery_details['operation_type']
+    patientId = surgery_details['patient_id']
 
     summary = elevenlabs_response['analysis']['transcript_summary']
     duration_sec = elevenlabs_response['metadata']['call_duration_secs']
