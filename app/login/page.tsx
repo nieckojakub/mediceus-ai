@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -21,7 +21,7 @@ export default function LoginPage() {
     sessionStorage.setItem("userEmail", (e.target as HTMLFormElement).email.value)
     setTimeout(() => {
       router.push("/dashboard")
-    }, 1000)
+    }, 2000)
   }
 
   return (
@@ -29,7 +29,7 @@ export default function LoginPage() {
       <Card className="max-w-lg w-full border-blue-100 shadow-lg">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 rounded-full bg-blue-50 w-fit">
-            <img src="/logo.png" alt="Logo" className="w-8 h-8" />
+            <Image src="/logo.png" alt="Logo" width={32} height={32} className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold text-blue-900">Welcome Back</CardTitle>
           <CardDescription className="text-blue-600">Login to access MediceusAI</CardDescription>
