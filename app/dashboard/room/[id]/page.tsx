@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,30 +8,31 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import VoiceComponent from "@/components/VoiceComponent"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Mic, MicOff, Download, Pencil } from "lucide-react"
+import { ArrowLeft, Download, Pencil } from "lucide-react"
 import EventTable from "@/components/ui/EventTable"
 import { TableProvider } from "@/components/TableContext"
 import { ConversationProvider, useConversation } from "@/components/ConversationContext"
 
-const TranscriptionContent = () => {
+interface OperationIdProps {
+  operationId?: string | null;
+}
+
+const TranscriptionContent = ({ operationId }: OperationIdProps) => {
   const { conversationId } = useConversation();
-  const [transcript] = useState<string[]>([]);
 
   const downloadReport = async () => {
     if (!conversationId) {
       console.error("No active conversation found");
       return;
     }
-  
+
     try {
-      const response = await fetch('http://localhost:5000/downloadReport', {
+      const response = await fetch('http://localhost:5000/api/downloadReport', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           conversationId,
-          surgeryDetails: window.surgeryDetails // Accessing from window since this is a nested component
+          surgeryDetails: window.surgeryDetails
         })
       });
   
@@ -45,7 +45,7 @@ const TranscriptionContent = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `surgery_report_${window.surgeryDetails.patientId}.pdf`;
+      a.download = `surgery_report_${window.surgeryDetails.patient_first_name}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -57,7 +57,7 @@ const TranscriptionContent = () => {
 
   return (
     <div className="flex gap-2">
-      <VoiceComponent />
+      <VoiceComponent operationId={operationId} />
       <Button
         onClick={downloadReport}
         variant="outline"
@@ -72,32 +72,88 @@ const TranscriptionContent = () => {
 };
 
 export default function RoomPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState("surgery")
-  const [isRecording, setIsRecording] = useState(false)
-  const [formSubmitted, setFormSubmitted] = useState(false)
-  const [surgeryDetails, setSurgeryDetails] = useState({
-    firstName: "",
-    lastName: "",
-    patientId: "",
-    procedure: "",
-  })
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("surgery");
+  const [isRecording, setIsRecording] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [operationDetails, setOperationDetails] = useState({
+    patient_first_name: "",
+    patient_last_name: "",
+    patient_pesel: "",
+    operation_type: "",
+  });
+  const [userEmail, setUserId] = useState<string | null>(null);
+  const [operationId, setOperationId] = useState<string | null>(null);
 
-  const handleSubmitSurgeryDetails = (e: React.FormEvent) => {
-    e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const newSurgeryDetails = {
-      firstName: formData.get("firstName") as string,
-      lastName: formData.get("lastName") as string,
-      patientId: formData.get("patientId") as string,
-      procedure: formData.get("procedure") as string,
+  // Retrieve user id from sessionStorage on mount
+  useEffect(() => {
+    const uid = sessionStorage.getItem("userEmail");
+    setUserId(uid);
+  }, []);
+
+  const createOperation = async (details: typeof operationDetails) => {
+    const room_id = params.id;
+  
+    try {
+      const userResponse = await fetch("http://localhost:5000/api/userId", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userEmail
+        }),
+      });
+  
+      if (!userResponse.ok) {
+        console.error("Failed to fetch user ID from the database");
+        return;
+      }
+  
+      const userData = await userResponse.json();
+      const user_id = userData.user_id;
+  
+      const operationResponse = await fetch("http://localhost:5000/api/createOperation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId: room_id,
+          userId: user_id,
+          patientFirstName: details.patient_first_name,
+          patientLastName: details.patient_last_name,
+          patientPesel: details.patient_pesel,
+          operationType: details.operation_type
+        }),
+      });
+  
+      if (!operationResponse.ok) {
+        console.error("Failed to create operation");
+        return;
+      }
+  
+      const operationData = await operationResponse.json();
+      setOperationId(operationData.operationId); // Store operationId in state
+      console.log("Operation created successfully:", operationData.operationId);
+  
+    } catch (error) {
+      console.error("Error creating operation:", error);
+    }
+  };
+  
+
+  const handleSubmitOperationDetails = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const newOperationDetails = {
+      patient_first_name: formData.get("patient_first_name") as string,
+      patient_last_name: formData.get("patient_last_name") as string,
+      patient_pesel: formData.get("patient_pesel") as string,
+      operation_type: formData.get("operation_type") as string,
     };
-    setSurgeryDetails(newSurgeryDetails);
-    // Store in window for access by nested components
-    window.surgeryDetails = newSurgeryDetails;
-    setFormSubmitted(true)
-    setActiveTab("transcription")
-  }
+    setOperationDetails(newOperationDetails);
+    window.surgeryDetails = newOperationDetails;
+    setFormSubmitted(true);
+    createOperation(newOperationDetails);
+    setActiveTab("transcription");
+  };
 
   return (
     <TableProvider>
@@ -123,7 +179,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                   className="data-[state=active]:bg-white"
                   disabled={formSubmitted && isRecording}
                 >
-                  Surgery Details
+                  Operation Details
                 </TabsTrigger>
                 <TabsTrigger value="transcription" className="data-[state=active]:bg-white" disabled={!formSubmitted}>
                   Live Transcription
@@ -133,39 +189,67 @@ export default function RoomPage({ params }: { params: { id: string } }) {
               <TabsContent value="surgery">
                 <Card className="border-blue-100 shadow-md">
                   <CardHeader>
-                    <CardTitle className="text-blue-900">Patient Information</CardTitle>
-                    <CardDescription className="text-blue-600">Enter patient and surgery details</CardDescription>
+                    <CardTitle className="text-blue-900">Patient & Operation Information</CardTitle>
+                    <CardDescription className="text-blue-600">
+                      Enter patient and operation details
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <form onSubmit={handleSubmitSurgeryDetails} className="space-y-4">
+                    <form onSubmit={handleSubmitOperationDetails} className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName" className="text-gray-700">
+                          <Label htmlFor="patient_first_name" className="text-gray-700">
                             First Name
                           </Label>
-                          <Input id="firstName" name="firstName" className="border-blue-100" required defaultValue={surgeryDetails.firstName} />
+                          <Input
+                            id="patient_first_name"
+                            name="patient_first_name"
+                            className="border-blue-100"
+                            required
+                            defaultValue={operationDetails.patient_first_name}
+                          />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName" className="text-gray-700">
+                          <Label htmlFor="patient_last_name" className="text-gray-700">
                             Last Name
                           </Label>
-                          <Input id="lastName" name="lastName" className="border-blue-100" required defaultValue={surgeryDetails.lastName} />
+                          <Input
+                            id="patient_last_name"
+                            name="patient_last_name"
+                            className="border-blue-100"
+                            required
+                            defaultValue={operationDetails.patient_last_name}
+                          />
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="patientId" className="text-gray-700">
-                          Patient ID
-                        </Label>
-                        <Input id="patientId" name="patientId" className="border-blue-100" required defaultValue={surgeryDetails.patientId} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="procedure" className="text-gray-700">
-                          Procedure
-                        </Label>
-                        <Input id="procedure" name="procedure" className="border-blue-100" required defaultValue={surgeryDetails.procedure} />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="patient_pesel" className="text-gray-700">
+                            Patient PESEL
+                          </Label>
+                          <Input
+                            id="patient_pesel"
+                            name="patient_pesel"
+                            className="border-blue-100"
+                            required
+                            defaultValue={operationDetails.patient_pesel}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="operation_type" className="text-gray-700">
+                            Operation Type
+                          </Label>
+                          <Input
+                            id="operation_type"
+                            name="operation_type"
+                            className="border-blue-100"
+                            required
+                            defaultValue={operationDetails.operation_type}
+                          />
+                        </div>
                       </div>
                       <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                        {formSubmitted ? "Update Surgery Details" : "Start Surgery"}
+                        {formSubmitted ? "Update Operation Details" : "Start Operation"}
                       </Button>
                     </form>
                   </CardContent>
@@ -178,7 +262,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-blue-900">Live Transcription</CardTitle>
-                        <CardDescription className="text-blue-600">Voice-assisted documentation</CardDescription>
+                        <CardDescription className="text-blue-600">
+                          Voice-assisted documentation
+                        </CardDescription>
                       </div>
                       <Button
                         variant="outline"
@@ -197,16 +283,16 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                         <div>
                           <span className="text-gray-500">Patient:</span>{" "}
                           <span className="text-gray-700">
-                            {surgeryDetails.firstName} {surgeryDetails.lastName}
+                            {operationDetails.patient_first_name} {operationDetails.patient_last_name}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-500">ID:</span>{" "}
-                          <span className="text-gray-700">{surgeryDetails.patientId}</span>
+                          <span className="text-gray-500">PESEL:</span>{" "}
+                          <span className="text-gray-700">{operationDetails.patient_pesel}</span>
                         </div>
                         <div className="col-span-2">
-                          <span className="text-gray-500">Procedure:</span>{" "}
-                          <span className="text-gray-700">{surgeryDetails.procedure}</span>
+                          <span className="text-gray-500">Operation:</span>{" "}
+                          <span className="text-gray-700">{operationDetails.operation_type}</span>
                         </div>
                       </div>
                     </div>
@@ -215,7 +301,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                       <EventTable />
                     </div>
 
-                    <TranscriptionContent />
+                    <TranscriptionContent operationId={operationId} />
                   </CardContent>
                 </Card>
               </TabsContent>

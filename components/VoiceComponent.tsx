@@ -8,7 +8,11 @@ import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useTable } from "@/components/TableContext";
 import { useConversation } from "@/components/ConversationContext";
 
-const VoiceChat = () => {
+interface VoiceChatProps {
+  operationId: string | null;
+}
+
+const VoiceChat = ({ operationId }: VoiceChatProps) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -50,12 +54,12 @@ const VoiceChat = () => {
         clientTools: {
           displayEvent: async ({eventValue, eventType}: {eventValue: string, eventType: string}) => {
             addRow(eventValue);
-            await fetch('http://localhost:5000/sendNotes', {
+            await fetch('http://localhost:5000/api/sendNotes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ eventValue, eventType })
+                body: JSON.stringify({ operationId, eventValue, eventType })
             });
           }
         }
