@@ -7,7 +7,7 @@
 ### Summary
 🚨 **The Problem:** Surgeons and medical teams should be fully focused on their patients—not distracted by manual documentation. However, current surgical workflows require them to track medications, procedures, and complications while operating, leading to inefficiencies and potential errors.
 
-✅ **The Solution:** MediceusAI is an AI-powered surgical assistant that listens, documents, and organizes every critical moment of surgery in real time. Using advanced AI, MediceusAI ensures that every administered medication, anesthetic, and procedure is accurately recorded—allowing doctors to focus entirely on saving lives.
+✅ **The Solution:** MediceusAI is an AI-powered surgical assistant that listens, documents, and organizes every critical moment of surgery in real time. Using advanced AI powered by Elevenlabs, MediceusAI ensures that every administered medication, anesthetic, and procedure is accurately recorded—allowing doctors to focus entirely on saving lives.
 
 By eliminating the burden of manual documentation, MediceusAI enhances surgical efficiency, improves patient safety, and ensures compliance with medical reporting standards. It’s not just a tool—it’s a revolution in surgical precision. 🚀
 
@@ -28,6 +28,7 @@ By eliminating the burden of manual documentation, MediceusAI enhances surgical 
 - **Vercel** - Web page template.
 - **Next.js** - Frontend framework for the user dashboard.
 - **Python Flask** - Backend for AI processing and API integrations.
+- **SQLite** - SQLite database for operations and events storage.
 
 ### 📈 Future Potential & Expansion:
 The project was inspired by a real-world problem faced by doctors all around Poland and beyond. As one of the hospitals has already expressed interest in our solution, we plan to cooperate with them and deliver a production-grade service, further expanding to private hospitals and clinics before onboarding other healthcare institutions.
@@ -42,6 +43,6 @@ The project was inspired by a real-world problem faced by doctors all around Pol
 
 ### Our Team:
 - **[Aleksander Mazur](https://www.linkedin.com/in/aleksander-mazur/)** - SWE @ Google. Creating and managing ElevenLabs AI Agent.
-- **[Jakub Niećko](https://www.linkedin.com/in/jakub-nie%C4%87ko/)** - SWE @ Motorola Solutions. Responsible for the organization and development of both frontend and backend components.
-- **Krzysztof Żerebecki** - 
+- **[Jakub Niećko](https://www.linkedin.com/in/jakub-nie%C4%87ko/)** - SWE @ Motorola Solutions. Responsible for the organization and development of both frontend, backend and database components.
+- **[Krzysztof Żerebecki](https://www.linkedin.com/in/krzysztof-%C5%BCerebecki-b32780226/)** - AWS Cloud Engineer @ Accenture. Responsible for the API communications, testing and debugging.
 - **[Marcin Retajczyk](https://www.linkedin.com/in/marcin-retajczyk/)** - Account Cloud Engineer @ Oracle Corporation. Focusing on development frontend and backend.
