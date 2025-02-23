@@ -74,13 +74,18 @@ def create_database():
 def insert_into(table_name, columns, row):
     conn = get_db_connection()
     cursor = conn.cursor()
-     
-    query = f"INSERT INTO {table_name}{columns} VALUES { row }"
-
-    cursor.execute(query) 
+    
+    placeholders = ", ".join(["?"] * len(row))  # Create placeholders dynamically
+    query = f"INSERT INTO {table_name} {columns} VALUES ({placeholders})"
+    
+    cursor.execute(query, row)  # Execute query with safe parameterized values
+    row_id = cursor.lastrowid  # Get the last inserted row's ID
 
     conn.commit()
     conn.close()
+    
+    return row_id  # Return the newly created row id
+
 
 
 def insert_sample_data():

@@ -117,6 +117,20 @@ def login():
     })
 
 
+@app.route('/api/userId', methods=['POST'])
+@cross_origin()
+def get_user_id():
+    conn = database.get_db_connection()
+    cursor = conn.cursor()
+    user_id = cursor.execute("SELECT id FROM Users WHERE email = ?", (request.json['userEmail'],)).fetchone()
+    conn.close()
+
+    if user_id is None:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    return jsonify({"status": "success", "user_id": user_id[0]}), 200
+
+
 @app.route('/api/rooms', methods=['GET'])
 @cross_origin()
 def get_rooms():
@@ -135,14 +149,37 @@ def get_rooms():
     return jsonify(room_list)
 
 
-@app.route('/sendNotes', methods=['POST'])
+@app.route('/api/createOperation', methods=['POST'])
+@cross_origin()
+def operation():
+    op_details = request.json
+
+    Operation = namedtuple('Operation', ['room_id', 'user_id', 'patient_first_name', 'patient_last_name', 'patient_pesel', 'operation_type'])
+
+    new_operation = Operation(
+        op_details['roomId'], 
+        op_details['userId'], 
+        op_details['patientFirstName'], 
+        op_details['patientLastName'], 
+        op_details['patientPesel'],
+        op_details['operationType']
+    )
+
+    # Insert note into database
+    operation_id = database.insert_into("Operation", new_operation._fields, new_operation)
+    
+    # Return a confirmation response
+    return jsonify({"status": "success", "received": op_details, "operationId": operation_id}), 200
+
+
+@app.route('/api/sendNotes', methods=['POST'])
 @cross_origin()
 def notes():
     chat_note = request.json
 
-    EventsColumns = namedtuple('EventsColumns', ['operation_id', 'event_type', 'event_value'])
+    Events = namedtuple('Events', ['operation_id', 'event_type', 'event_value'])
 
-    new_events = EventsColumns(chat_note['operationId'], chat_note['eventType'], chat_note['eventValue'])
+    new_events = Events(int(chat_note['operationId']), chat_note['eventType'], chat_note['eventValue'])
 
     # Insert note into database
     database.insert_into("Events", new_events._fields, new_events)
@@ -150,7 +187,8 @@ def notes():
     # Return a confirmation response
     return jsonify({"status": "success", "received": chat_note}), 200
 
-@app.route('/downloadReport', methods=['POST'])
+
+@app.route('/api/downloadReport', methods=['POST'])
 def report():
     chat_note = request.json
     print(chat_note)
@@ -166,18 +204,13 @@ def report():
     return jsonify({"status": "success", "received": chat_note}), 200
 
 
-@app.route('/lastOperationId', methods=['GET'])
+@app.route('/api/lastOperationId', methods=['GET'])
 @cross_origin()
 def last_operation_id():
     recent_op_id = database.get_last_operation_id()
     # Ensure a numeric value is returned even if the table is empty
     max_id = recent_op_id[0] if recent_op_id[0] is not None else 0
     return jsonify({"max_operation_id": max_id}), 200
-
-
-# @app.route('/generateReport', methods=['POST'])
-# def report():
-
 
 
 def main():

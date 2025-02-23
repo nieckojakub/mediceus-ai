@@ -45,8 +45,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <p className="text-blue-600">Select an operating room to begin</p>
             {isUsingFallback && (
-              <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
-                Demo Data
+              <span className="px-2 py-1 rounded-full bg-red-100 text-white-700 text-xs font-medium">
+                Failed to fetch from the database - consult the administrator
               </span>
             )}
           </div>
