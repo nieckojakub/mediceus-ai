@@ -1,5 +1,5 @@
 import datetime
-import time
+from datetime import datetime, timedelta
 from collections import namedtuple
 from pathlib import Path
 from services.eleven_labs import *
@@ -18,7 +18,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = 'your_secret_key'
 
 
@@ -29,7 +29,7 @@ def generate_token(user):
         'firstName': user['first_name'],
         'lastName': user['last_name'],
         'role': user['role'],
-        'exp':  datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+        'exp':  datetime.utcnow() + timedelta(hours=1)
     }
     token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
     # Ensure token is a string
@@ -230,4 +230,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    app.run(debug=True)
+    app.run(port='5000')
