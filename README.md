@@ -42,7 +42,7 @@ The project was inspired by a real-world problem faced by doctors all around Pol
 
 
 ### Our Team:
-- **[Aleksander Mazur](https://www.linkedin.com/in/aleksander-mazur/)** - SWE @ Google. Creating and managing ElevenLabs AI Agent.
+- **[Aleksander Mazur](https://www.linkedin.com/in/aleksander-mazur/)** - SWE @ Google. Managing and interacting with ElevenLabs AI Agent.
 - **[Jakub Niećko](https://www.linkedin.com/in/jakub-nie%C4%87ko/)** - SWE @ Motorola Solutions. Responsible for the organization and development of both frontend, backend and database components.
 - **[Krzysztof Żerebecki](https://www.linkedin.com/in/krzysztof-%C5%BCerebecki-b32780226/)** - AWS Cloud Engineer @ Accenture. Responsible for the API communications, testing and debugging.
 - **[Marcin Retajczyk](https://www.linkedin.com/in/marcin-retajczyk/)** - Account Cloud Engineer @ Oracle Corporation. Focusing on development frontend and backend.
