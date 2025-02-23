@@ -85,15 +85,28 @@ def create_report(elevenlabs_response, surgery_details):
     # **Budowanie treści raportu**
     content = []
 
-    # **Dodanie logo w prawym górnym rogu**
-    if logo:
-        content.append(logo)
-        content.append(Spacer(1, 12))  # Dodać odstęp po logo
+    # **Dodanie przestrzeni przed tytułem, aby logo było niżej**
+    content.append(Spacer(1, 30))  # Odstęp przed tytułem i logo
 
-    # **Tytuł raportu**
-    content.append(Paragraph("Surgery Report", title_style))
-    content.append(Spacer(1, 12))
-    
+    # **Dodanie sekcji tytułowej i logo po prawej stronie**
+    # Tworzymy tabelę z tytułem po lewej i logo po prawej
+    header_data = [
+        [Paragraph("Surgery Report", title_style), logo if logo else ""]
+    ]
+
+    # Przypiszemy odpowiednią szerokość kolumn w tabeli
+    header_table = Table(header_data, colWidths=[None, 1.5*inch])  # Pierwsza kolumna dla tekstu, druga dla logo
+
+    # Zastosowanie stylu dla tabeli nagłówka
+    header_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),  # Ustawienie wyrównania tekstu
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),  # Zmieniamy wyrównanie logo na CENTER
+    ]))
+
+    content.append(header_table)
+
+    content.append(Spacer(1, 12))  # Dodatkowy odstęp dla lepszego wyglądu
+
     # **Informacje o pacjencie**
     content.append(Paragraph(f"Patient First Name: {firstName}", normal_style))
     content.append(Paragraph(f"Patient Last Name: {lastName}", normal_style))
