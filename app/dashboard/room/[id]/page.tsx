@@ -20,8 +20,6 @@ interface OperationIdProps {
 const TranscriptionContent = ({ operationId }: OperationIdProps) => {
   const { conversationId } = useConversation();
 
-  console.log("DUPA: " + operationId)
-
   const downloadReport = async () => {
     if (!conversationId) {
       console.error("No active conversation found");
