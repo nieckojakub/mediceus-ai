@@ -16,7 +16,6 @@ export default function Dashboard() {
   const [rooms, setRooms] = useState<OperatingRoom[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isUsingFallback, setIsUsingFallback] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadRooms() {

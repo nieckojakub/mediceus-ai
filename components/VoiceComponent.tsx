@@ -13,7 +13,6 @@ interface VoiceChatProps {
 
 const VoiceChat = ({ operationId }: VoiceChatProps) => {
   const [hasPermission, setHasPermission] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { addRow } = useTable();
   const { setConversationId } = useConversation();
@@ -77,16 +76,6 @@ const VoiceChat = ({ operationId }: VoiceChatProps) => {
     } catch (error) {
       setErrorMessage("Failed to end conversation");
       console.error("Error ending conversation:", error);
-    }
-  };
-
-  const toggleMute = async () => {
-    try {
-      await conversation.setVolume({ volume: isMuted ? 1 : 0 });
-      setIsMuted(!isMuted);
-    } catch (error) {
-      setErrorMessage("Failed to change volume");
-      console.error("Error changing volume:", error);
     }
   };
 

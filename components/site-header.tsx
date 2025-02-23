@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { History, DoorClosed, LogOut } from "lucide-react"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -12,36 +13,58 @@ export function SiteHeader() {
   const [user, setUser] = useState<{ email: string } | null>(null)
 
   useEffect(() => {
-    if (typeof window === "undefined") return // Zapobiega błędom SSR
+    if (typeof window === "undefined") return
 
-    const userEmail = sessionStorage.getItem("userEmail")
-
-    if (pathname.includes("/dashboard")) {
+    // Sprawdź czy użytkownik jest zalogowany przy każdym renderowaniu
+    const checkUser = () => {
+      const userEmail = sessionStorage.getItem("userEmail")
       if (userEmail) {
         setUser({ email: userEmail })
       } else {
-        router.push("/login")
+        // Jeśli nie ma emaila w sesji i jesteśmy na chronionej ścieżce
+        if (pathname !== "/login" && pathname !== "/register") {
+          router.push("/login")
+        }
       }
     }
 
-    // Usuwanie sesji przy zamknięciu okna / odświeżeniu strony
-    const clearSession = () => sessionStorage.clear()
+    checkUser()
+
+    // Obsługa wygasania sesji
+    const clearSession = () => {
+      sessionStorage.clear()
+      setUser(null)
+    }
+
+    // Nasłuchiwanie na zamknięcie okna
     window.addEventListener("beforeunload", clearSession)
 
-    // Można dodać obsługę przejścia w tło (np. po 5 minutach usuwać sesję)
+    // Obsługa przejścia w tło
+    let timeoutId: NodeJS.Timeout
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        setTimeout(() => {
-          sessionStorage.clear()
-          setUser(null)
-        }, 5 * 60 * 1000) // 5 minut
+        timeoutId = setTimeout(
+          () => {
+            clearSession()
+            router.push("/login")
+          },
+          5 * 60 * 1000,
+        ) // 5 minut
+      } else {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
       }
     }
+
     document.addEventListener("visibilitychange", handleVisibilityChange)
 
     return () => {
       window.removeEventListener("beforeunload", clearSession)
       document.removeEventListener("visibilitychange", handleVisibilityChange)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     }
   }, [pathname, router])
 
@@ -55,8 +78,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Logo" className="h-6 w-auto" />
+          <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
+            <Image src="/logo.png" alt="Logo" width={32} height={32} className="h-6 w-auto" />
             <span className="text-xl font-bold text-blue-900">MediceusAI</span>
           </Link>
 
@@ -65,9 +88,7 @@ export function SiteHeader() {
               <Link
                 href="/dashboard"
                 className={`flex items-center space-x-2 ${
-                  pathname.includes("/dashboard") && !pathname.includes("/history")
-                    ? "text-blue-600"
-                    : "text-gray-500 hover:text-blue-600"
+                  pathname === "/dashboard" ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
                 }`}
               >
                 <DoorClosed className="h-4 w-4" />
@@ -76,7 +97,7 @@ export function SiteHeader() {
               <Link
                 href="/dashboard/history"
                 className={`flex items-center space-x-2 ${
-                  pathname.includes("/history") ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
+                  pathname === "/dashboard/history" ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
                 }`}
               >
                 <History className="h-4 w-4" />
