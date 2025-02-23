@@ -6,8 +6,11 @@ from reportlab.lib.units import inch
 import json
 import os
 from io import BytesIO
+import database
+from datetime import datetime
+import pytz
 
-def create_report(elevenlabs_response, surgery_details):
+def create_report(elevenlabs_response, surgery_details, operation_id):
     firstName = surgery_details['patient_first_name']
     lastName = surgery_details['patient_last_name']
     procedure = surgery_details['operation_type']
@@ -42,9 +45,26 @@ def create_report(elevenlabs_response, surgery_details):
                     params_dict = json.loads(params)
                 
                 if 'eventType' in params_dict and 'eventValue' in params_dict:
-                    event_type = Paragraph(params_dict['eventType'], ParagraphStyle('CellStyle'))
+                    event_with_timestamp = database.get_events_for_operation_id_and_value(operation_id, params_dict['eventValue'])
+                    if event_with_timestamp:
+                        print(f"Event {params_dict['eventValue']} with timestamp: {event_with_timestamp[0]}")
+                        # Convert string to datetime object in UTC
+                        utc_timezone = pytz.utc
+                        utc_time = datetime.strptime(event_with_timestamp[0], "%Y-%m-%d %H:%M:%S")
+                        utc_time = utc_timezone.localize(utc_time)
+                        print("UTC time: ", utc_time)
+
+                        # Convert to Warsaw time
+                        warsaw_timezone = pytz.timezone("Europe/Warsaw")
+                        warsaw_time = utc_time.astimezone(warsaw_timezone)
+                        print("Warsaw time: ", warsaw_time)
+                        warsaw_time = warsaw_time.strftime("%Y-%m-%d %H:%M:%S")
+                        print("Warsaw time string: ", warsaw_time)
+                        event_timestamps = Paragraph(warsaw_time, ParagraphStyle('CellStyle'))
+                    else:
+                        event_timestamps = Paragraph(" ", ParagraphStyle('CellStyle'))
                     event_value = Paragraph(params_dict['eventValue'], ParagraphStyle('CellStyle'))
-                    events.append([event_type, event_value])
+                    events.append([event_timestamps, event_value])
         except Exception as e:
             print(f"Error processing event: {str(e)}")
             continue
@@ -89,25 +109,46 @@ def create_report(elevenlabs_response, surgery_details):
 
     # **Dodanie przestrzeni przed tytułem, aby logo było niżej**
     content.append(Spacer(1, 30))  # Odstęp przed tytułem i logo
+    # Define the custom style for "MediceusAI" branding
+    mediceus_style = ParagraphStyle(
+        'MediceusStyle',
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        textColor=colors.HexColor("#1E3A8A"),  # Equivalent to text-blue-900
+        alignment=1,  # Center align inside its cell
+        spaceBefore=6
+    )
 
-    # **Dodanie sekcji tytułowej i logo po prawej stronie**
-    # Tworzymy tabelę z tytułem po lewej i logo po prawej
-    header_data = [
-        [Paragraph("Surgery Report", title_style), logo if logo else ""]
-    ]
+    # Create the "MediceusAI" text
+    mediceus_text = Paragraph("MediceusAI", mediceus_style)
 
-    # Przypiszemy odpowiednią szerokość kolumn w tabeli
-    header_table = Table(header_data, colWidths=[None, 1.5*inch])  # Pierwsza kolumna dla tekstu, druga dla logo
+    # Stack logo and text in a vertical table (single-column)
+    logo_and_text = Table([[logo], [mediceus_text]], colWidths=[1.5*inch])
 
-    # Zastosowanie stylu dla tabeli nagłówka
-    header_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, 0), 'LEFT'),  # Ustawienie wyrównania tekstu
-        ('ALIGN', (1, 0), (1, 0), 'CENTER'),  # Zmieniamy wyrównanie logo na CENTER
+    # Align content inside the rightmost column
+    logo_and_text.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align inside the column
+        ('VALIGN', (0, 0), (-1, -1), 'TOP')  # Align to the top
     ]))
 
-    content.append(header_table)
+    # Create a header table with two columns (left empty, right contains logo+text)
+    header_table = Table([["", logo_and_text]], colWidths=[None, 1.5*inch])
 
-    content.append(Spacer(1, 12))  # Dodatkowy odstęp dla lepszego wyglądu
+    # Apply alignment to ensure logo & text are in the top-right corner
+    header_table.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),  # Right align the entire cell
+        ('VALIGN', (1, 0), (1, 0), 'TOP'),  # Align to the top of the page
+    ]))
+
+    # Add the header table to the document content
+    content.append(header_table)
+    content.append(Spacer(1, 12))  # Add spacing
+
+    # Add the "Surgery Report" title below
+    content.append(Paragraph("Surgery Report", title_style))
+    content.append(Spacer(1, 12))  # Additional spacing before patient details
+
+
 
     # **Informacje o pacjencie**
     content.append(Paragraph(f"Patient First Name: {firstName}", normal_style))
@@ -130,7 +171,7 @@ def create_report(elevenlabs_response, surgery_details):
     content.append(Spacer(1, 12))
     
     # **Tworzenie tabeli eventów**
-    header = [Paragraph("Event Type", cell_style), Paragraph("Event Value", cell_style)]
+    header = [Paragraph("Timestamp", cell_style), Paragraph("Event Value", cell_style)]
     table_data = [header] + events
     
     table = Table(table_data, colWidths=[2.5*inch, 4*inch], repeatRows=1)
