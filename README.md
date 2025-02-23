@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="public/logo.png" alt="MedicusAI Logo" width="200"/>
+</p>
 
-## Getting Started
+# MedicusAI
 
-First, run the development server:
+### Summary
+🚨 **The Problem:** Surgeons and medical teams should be fully focused on their patients—not distracted by manual documentation. However, current surgical workflows require them to track medications, procedures, and complications while operating, leading to inefficiencies and potential errors.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+✅ **The Solution:** MediceusAI is an AI-powered surgical assistant that listens, documents, and organizes every critical moment of surgery in real time. Using advanced AI, MediceusAI ensures that every administered medication, anesthetic, and procedure is accurately recorded—allowing doctors to focus entirely on saving lives.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+By eliminating the burden of manual documentation, MediceusAI enhances surgical efficiency, improves patient safety, and ensures compliance with medical reporting standards. It’s not just a tool—it’s a revolution in surgical precision. 🚀
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ✨ What MediceusAI Does:
+- **Digitalization of medical documentation** – Converts paper-based medical records into digital format.  
+- **Monitoring the use of narcotic drugs such as fentanyl** – Tracks and records the administration of controlled substances.  
+- **Ensures strict authorization control** – Prevents unauthorized access to sensitive medical data.  
+- **Allows medical personnel to focus on the patient by eliminating manual note-taking** – Reduces administrative workload, enabling doctors to concentrate on patient care.  
+- Captures and documents all surgical actions, medications, and procedures in real-time.  
+- Generates a structured post-surgery report with key events.  
+- Organizes and manages patient records and operating room data for seamless hospital workflow.  
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### 🛠 How We Built It:
+- **Repository:** [MediceusAI GitHub](https://github.com/Krzychu-Z/Mediceus)
+- **ElevenLabs** - Conversational AI for real-time voice interaction.
+- **Vercel** - Web page template.
+- **Next.js** - Frontend framework for the user dashboard.
+- **Python Flask** - Backend for AI processing and API integrations.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📈 Future Potential & Expansion:
+The project was inspired by a real-world problem faced by doctors all around Poland and beyond. As one of the hospitals has already expressed interest in our solution, we plan to cooperate with them and deliver a production-grade service, further expanding to private hospitals and clinics before onboarding other healthcare institutions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Upcoming Features:
+- **Voice Diarization** – Distinguishes different speakers, improving accuracy in documentation.
+- **EHR Integration** – Seamless connection with hospital electronic health record (EHR) systems.
+- **AI-Powered Data Insights** – Advanced analytics on surgical procedures for premium users.
+- **Hardware Partnerships** – Potential collaboration with AI-powered microphones & OR devices.
+- **Warehouse of narcotic drugs** – Integration with narcotic drug inventory management.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Our Team:
+- **Aleksander Mazur** - SWE @ Google. Creating and managing ElevenLabs AI Agent.
+- **Jakub Niećko** - SWE @ Motorola Solutions. Frontend and backend organization and development.
+- **Krzysztof Żerebecki** - 
+- **Marcin Retajczyk** - 
