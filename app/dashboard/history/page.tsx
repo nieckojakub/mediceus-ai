@@ -15,48 +15,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 const surgeryHistory = [
   {
     id: 1,
-    date: "2024-02-22",
-    startTime: "09:00",
-    endTime: "10:30",
+    date: "2025-02-23",
+    startTime: "14:30",
+    endTime: "15:30",
     room: "Operating Room 1",
-    patient: "John Doe",
-    doctor: "Dr. Sarah Smith",
+    patient: "Jan Kowalski",
+    doctor: "Mateusz Kowal",
     procedure: "Appendectomy",
-    duration: "1h 30min",
+    duration: "1h",
     notes: "Successful procedure with no complications",
     status: "Completed",
   },
   {
     id: 2,
-    date: "2024-02-21",
+    date: "2025-02-23",
     startTime: "11:00",
     endTime: "13:15",
     room: "Operating Room 3",
     patient: "Jane Smith",
-    doctor: "Dr. Michael Brown",
+    doctor: "Michael Brown",
     procedure: "Knee Arthroscopy",
     duration: "2h 15min",
     notes: "Patient responded well to anesthesia",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    date: "2024-02-20",
-    startTime: "14:00",
-    endTime: "14:45",
-    room: "Operating Room 2",
-    patient: "Mike Johnson",
-    doctor: "Dr. Sarah Smith",
-    procedure: "Hernia Repair",
-    duration: "45min",
-    notes: "Minimally invasive procedure",
     status: "Completed",
   },
 ]
 
 const operatingRooms = ["All Rooms", "Operating Room 1", "Operating Room 2", "Operating Room 3", "Operating Room 4"]
 
-const doctors = ["All Doctors", "Dr. Sarah Smith", "Dr. Michael Brown", "Dr. Emily Jones", "Dr. David Wilson"]
+const doctors = ["All Doctors", "Mateusz Kowal", "Dr. Michael Brown", "Dr. Emily Jones", "Dr. David Wilson"]
 
 export default function HistoryPage() {
   const [selectedRoom, setSelectedRoom] = useState("All Rooms")
