@@ -5,6 +5,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 import json
 import os
+from io import BytesIO
 
 def create_report(elevenlabs_response, surgery_details):
     firstName = surgery_details['firstName']
@@ -17,7 +18,7 @@ def create_report(elevenlabs_response, surgery_details):
     transcript = elevenlabs_response['transcript']
     
     # Załaduj logo
-    logo_path = "public/logo.png"
+    logo_path = "utils/public/logo.png"
     if os.path.exists(logo_path):
         logo = Image(logo_path, width=1.5*inch, height=1.5*inch)  # Ustawienie rozmiaru logo
     else:
@@ -49,9 +50,10 @@ def create_report(elevenlabs_response, surgery_details):
             continue
     
     # Tworzenie pliku PDF
-    output_filename = f"{firstName}_{lastName}_{procedure}_{patientId}.pdf"
+    output_filename = f"surgery_report_{patientId}.pdf"
+    buffer = BytesIO()
     doc = SimpleDocTemplate(
-        output_filename,
+        buffer,
         pagesize=letter,
         rightMargin=72,
         leftMargin=72,
@@ -164,6 +166,8 @@ def create_report(elevenlabs_response, surgery_details):
     
     # **Generowanie raportu**
     doc.build(content)
+    
+    buffer.seek(0)  # Ensure the buffer is positioned at the beginning
     print(f"PDF report saved as {output_filename}")
     
-    return events
+    return buffer, output_filename

@@ -23,7 +23,7 @@ const TranscriptionContent = () => {
       console.error("No active conversation found");
       return;
     }
-
+  
     try {
       const response = await fetch('http://localhost:5000/downloadReport', {
         method: 'POST',
@@ -35,13 +35,14 @@ const TranscriptionContent = () => {
           surgeryDetails: window.surgeryDetails // Accessing from window since this is a nested component
         })
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to download report');
       }
-
-      const data = await response.blob();
-      const url = window.URL.createObjectURL(data);
+  
+      // Convert response to a blob (PDF)
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `surgery_report_${window.surgeryDetails.patientId}.pdf`;
