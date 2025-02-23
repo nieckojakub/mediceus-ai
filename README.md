@@ -2,7 +2,7 @@
   <img src="public/logo.png" alt="MedicusAI Logo" width="200"/>
 </p>
 
-# MedicusAI
+# MediceusAI
 
 ### Summary
 🚨 **The Problem:** Surgeons and medical teams should be fully focused on their patients—not distracted by manual documentation. However, current surgical workflows require them to track medications, procedures, and complications while operating, leading to inefficiencies and potential errors.
@@ -23,7 +23,7 @@ By eliminating the burden of manual documentation, MediceusAI enhances surgical 
 
 
 ### 🛠 How We Built It:
-- **Repository:** [MediceusAI GitHub](https://github.com/Krzychu-Z/Mediceus)
+- **Repository:** [MediceusAI GitHub](https://github.com/Krzychu-Z/mediceus-ai)
 - **ElevenLabs** - Conversational AI for real-time voice interaction.
 - **Vercel** - Web page template.
 - **Next.js** - Frontend framework for the user dashboard.
