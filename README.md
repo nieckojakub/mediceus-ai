@@ -46,3 +46,25 @@ The project was inspired by a real-world problem faced by doctors all around Pol
 - **[Jakub Niećko](https://www.linkedin.com/in/jakub-nie%C4%87ko/)** - SWE @ Motorola Solutions. Responsible for the organization and development of both frontend, backend and database components.
 - **[Krzysztof Żerebecki](https://www.linkedin.com/in/krzysztof-%C5%BCerebecki-b32780226/)** - AWS Cloud Engineer @ Accenture. Responsible for the API communications, testing and debugging.
 - **[Marcin Retajczyk](https://www.linkedin.com/in/marcin-retajczyk/)** - Account Cloud Engineer @ Oracle Corporation. Focusing on development frontend and backend.
+
+
+### Example local deployment
+- Download this repository to some location on your computer
+- Tools required: Python 3.9>=, npm, npx, pip
+#### Start backend server
+`Inside backends folder`
+```
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements.txt
+python3 api.py
+```
+Your backend server has created a SQLite database file and is running at localhost:5000
+#### Start frontend server
+`Inside repo root folder`
+```
+npm install
+npm run build
+npm run start
+```
+You have now deployed working version of MediceusAI on localhost:3000
