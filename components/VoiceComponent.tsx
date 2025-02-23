@@ -91,12 +91,16 @@ const VoiceChat = ({ operationId }: VoiceChatProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <Button onClick={status === "connected" ? handleEndConversation : handleStartConversation} disabled={!hasPermission} className="w-full">
+    <div className="flex-1">
+      <Button 
+        onClick={status === "connected" ? handleEndConversation : handleStartConversation} 
+        disabled={!hasPermission} 
+        className="w-full"
+      >
         {status === "connected" ? <MicOff className="mr-2 h-4 w-4" /> : <Mic className="mr-2 h-4 w-4" />}
         {status === "connected" ? "End Conversation" : "Start Conversation"}
       </Button>
-      <div className="text-center text-sm">
+      <div className="text-center text-sm mt-2">
         {status === "connected" && <p className="text-green-600">{isSpeaking ? "Agent is speaking..." : "Listening..."}</p>}
         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
         {!hasPermission && <p className="text-yellow-600">Please allow microphone access to use voice chat</p>}

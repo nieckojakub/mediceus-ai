@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,6 +32,7 @@ const TranscriptionContent = ({ operationId }: OperationIdProps) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           conversationId,
+          operationId,
           surgeryDetails: window.surgeryDetails
         })
       });
@@ -57,7 +58,9 @@ const TranscriptionContent = ({ operationId }: OperationIdProps) => {
 
   return (
     <div className="flex gap-2">
-      <VoiceComponent operationId={operationId} />
+      <div className="flex-1">
+        <VoiceComponent operationId={operationId} />
+      </div>
       <Button
         onClick={downloadReport}
         variant="outline"
@@ -72,6 +75,7 @@ const TranscriptionContent = ({ operationId }: OperationIdProps) => {
 };
 
 export default function RoomPage({ params }: { params: { id: string } }) {
+  const rawParams = useParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("surgery");
   const [isRecording, setIsRecording] = useState(false);
@@ -85,7 +89,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const [userEmail, setUserId] = useState<string | null>(null);
   const [operationId, setOperationId] = useState<string | null>(null);
 
-  console.log(operationId)
+  const roomId = rawParams?.id || params.id;
 
   // Retrieve user id from sessionStorage on mount
   useEffect(() => {
@@ -94,8 +98,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   }, []);
 
   const createOperation = async (details: typeof operationDetails) => {
-    const room_id = params.id;
-  
     try {
       const userResponse = await fetch("http://localhost:5000/api/userId", {
         method: "POST",
@@ -117,7 +119,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          roomId: room_id,
+          roomId: roomId,
           userId: user_id,
           patientFirstName: details.patient_first_name,
           patientLastName: details.patient_last_name,
@@ -157,6 +159,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     setActiveTab("transcription");
   };
 
+  if (!roomId) return <p>Loading...</p>;
+
   return (
     <TableProvider>
       <ConversationProvider>
@@ -171,7 +175,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Rooms
               </Button>
-              <h1 className="text-2xl font-bold text-blue-900">Operating Room {params.id}</h1>
+              <h1 className="text-2xl font-bold text-blue-900">Operating Room {roomId}</h1>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
