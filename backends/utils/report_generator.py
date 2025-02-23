@@ -1,9 +1,10 @@
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 import json
+import os
 
 def create_report(elevenlabs_response, surgery_details):
     firstName = surgery_details['firstName']
@@ -15,7 +16,14 @@ def create_report(elevenlabs_response, surgery_details):
     duration_sec = elevenlabs_response['metadata']['call_duration_secs']
     transcript = elevenlabs_response['transcript']
     
-    # Collect all events
+    # Załaduj logo
+    logo_path = "public/logo.png"
+    if os.path.exists(logo_path):
+        logo = Image(logo_path, width=1.5*inch, height=1.5*inch)  # Ustawienie rozmiaru logo
+    else:
+        logo = None  # Jeśli logo nie istnieje, pomijamy je
+
+    # Kolekcjonowanie eventów
     events = []
     for element in transcript:
         try:
@@ -33,7 +41,6 @@ def create_report(elevenlabs_response, surgery_details):
                     params_dict = json.loads(params)
                 
                 if 'eventType' in params_dict and 'eventValue' in params_dict:
-                    # Create Paragraph objects for cell content to enable wrapping
                     event_type = Paragraph(params_dict['eventType'], ParagraphStyle('CellStyle'))
                     event_value = Paragraph(params_dict['eventValue'], ParagraphStyle('CellStyle'))
                     events.append([event_type, event_value])
@@ -41,7 +48,7 @@ def create_report(elevenlabs_response, surgery_details):
             print(f"Error processing event: {str(e)}")
             continue
     
-    # Setup the document
+    # Tworzenie pliku PDF
     output_filename = f"{firstName}_{lastName}_{procedure}_{patientId}.pdf"
     doc = SimpleDocTemplate(
         output_filename,
@@ -52,13 +59,12 @@ def create_report(elevenlabs_response, surgery_details):
         bottomMargin=72
     )
     
-    # Styles
+    # Style
     styles = getSampleStyleSheet()
     title_style = styles['Heading1']
     heading_style = styles['Heading2']
     normal_style = styles['Normal']
     
-    # Custom style for wrapped text
     wrapped_style = ParagraphStyle(
         'WrappedStyle',
         parent=styles['Normal'],
@@ -67,7 +73,6 @@ def create_report(elevenlabs_response, surgery_details):
         leading=12
     )
     
-    # Custom style for table cells
     cell_style = ParagraphStyle(
         'CellStyle',
         parent=styles['Normal'],
@@ -76,72 +81,66 @@ def create_report(elevenlabs_response, surgery_details):
         spaceBefore=3,
         spaceAfter=3
     )
-    
-    # Build the document content
+
+    # **Budowanie treści raportu**
     content = []
-    
-    # Title
+
+    # **Dodanie logo w prawym górnym rogu**
+    if logo:
+        content.append(logo)
+        content.append(Spacer(1, 12))  # Dodać odstęp po logo
+
+    # **Tytuł raportu**
     content.append(Paragraph("Surgery Report", title_style))
     content.append(Spacer(1, 12))
     
-    # Patient Info
+    # **Informacje o pacjencie**
     content.append(Paragraph(f"Patient First Name: {firstName}", normal_style))
     content.append(Paragraph(f"Patient Last Name: {lastName}", normal_style))
     content.append(Paragraph(f"Procedure: {procedure}", normal_style))
     content.append(Paragraph(f"Patient ID: {patientId}", normal_style))
     content.append(Spacer(1, 12))
     
-    # Duration
+    # **Czas trwania rozmowy**
     content.append(Paragraph(f"Duration: {duration_sec} seconds", normal_style))
     content.append(Spacer(1, 12))
     
-    # Summary Section
+    # **Podsumowanie**
     content.append(Paragraph("Summary:", heading_style))
     content.append(Paragraph(summary, wrapped_style))
     content.append(Spacer(1, 12))
     
-    # Events Table
+    # **Sekcja z eventami**
     content.append(Paragraph("Events:", heading_style))
     content.append(Spacer(1, 12))
     
-    # Table with all events
-    # Create header with Paragraph objects
+    # **Tworzenie tabeli eventów**
     header = [Paragraph("Event Type", cell_style), Paragraph("Event Value", cell_style)]
     table_data = [header] + events
     
-    # Create table with specified column widths
     table = Table(table_data, colWidths=[2.5*inch, 4*inch], repeatRows=1)
     
-    # Define colors for alternating rows
-    header_color = colors.Color(0.3, 0.3, 0.3)  # Dark gray
-    row1_color = colors.Color(0.95, 0.95, 0.95)  # Very light gray
-    row2_color = colors.Color(1, 1, 1)  # White
+    # Style tabeli
+    header_color = colors.Color(0.3, 0.3, 0.3)
+    row1_color = colors.Color(0.95, 0.95, 0.95)
+    row2_color = colors.Color(1, 1, 1)
     
-    # Create table style with alternating row colors
     style = TableStyle([
-        # Header styling
         ('BACKGROUND', (0, 0), (-1, 0), header_color),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
-        
-        # Grid
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BOX', (0, 0), (-1, -1), 2, colors.black),
-        
-        # Padding
         ('LEFTPADDING', (0, 0), (-1, -1), 6),
         ('RIGHTPADDING', (0, 0), (-1, -1), 6),
         ('TOPPADDING', (0, 0), (-1, -1), 6),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        
-        # Alignment
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ])
     
-    # Add alternating row colors
-    for i in range(1, len(table_data)):  # Start from 1 to skip header
+    for i in range(1, len(table_data)):  
         if i % 2 == 0:
             style.add('BACKGROUND', (0, i), (-1, i), row1_color)
         else:
@@ -150,7 +149,7 @@ def create_report(elevenlabs_response, surgery_details):
     table.setStyle(style)
     content.append(table)
     
-    # Build the PDF
+    # **Generowanie raportu**
     doc.build(content)
     print(f"PDF report saved as {output_filename}")
     
