@@ -7,10 +7,14 @@ from utils.report_generator import *
 import database
 import jwt
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS, cross_origin
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlite3 import IntegrityError
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 app = Flask(__name__)
@@ -160,10 +164,13 @@ def report():
     
     response = json.loads(response)
 
-    report = create_report(response, chat_note['surgeryDetails'])
-    
-    # Return a confirmation response
-    return jsonify({"status": "success", "received": chat_note}), 200
+    report_buffer, output_filename = create_report(response, chat_note['surgeryDetails'])
+    # Print buffer size
+    print("Buffer size:")
+    print(report_buffer.getbuffer().nbytes)
+    print("=====")
+
+    return send_file(report_buffer, mimetype='application/pdf', as_attachment=False, download_name=output_filename)
 
 
 @app.route('/lastOperationId', methods=['GET'])
