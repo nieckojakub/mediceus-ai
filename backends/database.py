@@ -18,6 +18,17 @@ def get_last_operation_id():
 
     return result
 
+def get_events_for_operation_id_and_value(operation_id, event_value):
+    # Connect to the sqlite database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Execute the query to get the maximum operation_id from the Events table
+    cursor.execute("SELECT timestamp FROM Events WHERE operation_id = ? AND event_value = ?", (operation_id, event_value, ))
+    result = cursor.fetchone()
+    conn.close()
+
+    return result
+
 
 def create_database():
     conn = get_db_connection()

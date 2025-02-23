@@ -202,7 +202,7 @@ def report():
     
     response = json.loads(response)
 
-    report_buffer, output_filename = create_report(response, chat_note['surgeryDetails'])
+    report_buffer, output_filename = create_report(response, chat_note['surgeryDetails'], chat_note['operationId'])
     # Print buffer size
     print("Buffer size:")
     print(report_buffer.getbuffer().nbytes)
