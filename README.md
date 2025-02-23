@@ -44,4 +44,4 @@ The project was inspired by a real-world problem faced by doctors all around Pol
 - **Aleksander Mazur** - SWE @ Google. Creating and managing ElevenLabs AI Agent.
 - **Jakub Niećko** - SWE @ Motorola Solutions. Frontend and backend organization and development.
 - **Krzysztof Żerebecki** - 
-- **Marcin Retajczyk** - 
+- **Marcin Retajczyk** - Account Cloud Engineer @ Oracle Corporation. Designing cloud architecture and focusing on business customer needs.
