@@ -3,6 +3,7 @@
 </p>
 
 # MediceusAI
+https://devpost.com/software/mediceusai
 
 ### Summary
 🚨 **The Problem:** Surgeons and medical teams should be fully focused on their patients—not distracted by manual documentation. However, current surgical workflows require them to track medications, procedures, and complications while operating, leading to inefficiencies and potential errors.
